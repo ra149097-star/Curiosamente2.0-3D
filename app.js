@@ -1,26 +1,5 @@
-
-let audioCtx=null, soundOn=true;
-function ensureAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
-function tone(freq,dur,type='sine',gain=.13,delay=0){
- if(!soundOn)return; ensureAudio(); const o=audioCtx.createOscillator(),g=audioCtx.createGain();
- o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,audioCtx.currentTime+delay);
- g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+delay+dur);
- o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime+delay);o.stop(audioCtx.currentTime+delay+dur);
-}
-function sfx(kind){
- if(kind==='hit'){tone(660,.12);tone(880,.18,'sine',.13,.10)}
- else if(kind==='error'){tone(180,.28,'sawtooth',.10)}
- else if(kind==='win'){tone(523,.18);tone(659,.18,'sine',.13,.16);tone(784,.3,'sine',.13,.32)}
-}
-document.addEventListener('pointerdown',ensureAudio,{once:true});
-
 const pairs={1:{mate:2,text:'Par 1 e 2: duas cartas com a mesma imagem.'},2:{mate:1},3:{mate:4,text:'Par 3 e 4: duas cartas com a mesma imagem.'},4:{mate:3},5:{mate:6,text:'Par 5 e 6: duas cartas com a mesma imagem.'},6:{mate:5},7:{mate:8,text:'Par 7 e 8: duas cartas com a mesma imagem.'},8:{mate:7},9:{mate:10,text:'Par 9 e 10: duas cartas com a mesma imagem.'},10:{mate:9},11:{mate:12,text:'Par 11 e 12: duas cartas com a mesma imagem.'},12:{mate:11}};
-const phases=[
- {title:"Primeiros sinais",cards:[1,2,3,4]},
- {title:"Memória e hipocampo",cards:[5,6,7,8]},
- {title:"Cognição e linguagem",cards:[9,10,11,12]},
- {title:"Desafio final",cards:[1,2,3,4,5,6,7,8,9,10,11,12]}
-];
+const phases=[{title:'Primeiros Pares',cards:[1,2,3,4],brief:'A Dra. indica: a carta 1 faz par com a 2; a carta 3 faz par com a 4. Você terá 5 segundos para memorizar.'},{title:'Memória e Alzheimer',cards:[1,2,3,4,5,6],brief:'Agora: 1 combina com 2, 3 combina com 4 e 5 combina com 6. Observe as imagens por 5 segundos.'},{title:'Redes do Sistema Nervoso',cards:[1,2,3,4,5,6,7,8],brief:'Nesta fase: 1–2, 3–4, 5–6 e 7–8 são os pares. Memorize a posição das imagens.'},{title:'Desafio Final',cards:[1,2,3,4,5,6,7,8,9,10,11,12],brief:'Fase final: 1–2, 3–4, 5–6, 7–8, 9–10 e 11–12. Você terá 5 segundos para memorizar todos.'}];
 let phase=0,first=null,second=null,lock=false,matched=0,score=0,sound=true,installPrompt=null;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const aud={ok:new Audio('assets/audio/acerto.mp3'),bad:new Audio('assets/audio/erro.mp3'),win:new Audio('assets/audio/vitoria.mp3')};
